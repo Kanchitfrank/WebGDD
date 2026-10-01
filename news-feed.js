@@ -7,7 +7,7 @@
  const feeds=[...document.querySelectorAll('[data-news-feed]')];
  const originalCards=new Map(feeds.map(feed=>[feed,[...feed.children].map(card=>card.cloneNode(true))]));
  let last='';
- function refresh(){if(document.hidden)return;fetch(new URL('content/news.json',root),{cache:'no-store'}).then(response=>{if(!response.ok)throw Error();return response.json();}).then(data=>{
+ function refresh(override){if(document.hidden)return;fetch(new URL('content/news.json',root),{cache:'no-store'}).then(response=>{if(!response.ok)throw Error();return override?.posts?override:response.json();}).then(data=>{
   const serialized=JSON.stringify(data);if(serialized===last)return;last=serialized;
   const posts=(Array.isArray(data.posts)?data.posts:[]).filter(p=>p&&p.published===true&&typeof p.id==='string'&&typeof p.title==='string').sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   if(article){
@@ -30,5 +30,6 @@
   });
   document.dispatchEvent(new Event('gdd:news-updated'));
  }).catch(()=>{if(article)article.replaceChildren(el('p','โหลดข่าวไม่ได้ กรุณารีเฟรชหน้าเว็บอีกครั้ง'));});}
- refresh();setInterval(refresh,15000);document.addEventListener('visibilitychange',refresh);
+ window.addEventListener('message',event=>{if(event.origin===location.origin&&event.source===parent&&parent!==window&&event.data?.type==='gdd-preview')refresh(event.data.news);});
+ refresh();if(!new URLSearchParams(location.search).has('editor-preview')){setInterval(refresh,15000);document.addEventListener('visibilitychange',refresh);}
 })();

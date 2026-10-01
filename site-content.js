@@ -5,9 +5,9 @@
  const originals=new Map([...document.querySelectorAll('[data-cms-id]')].map(node=>[node.dataset.cmsId,{node,html:node.innerHTML,src:node.getAttribute('src'),href:node.getAttribute('href')}]));
  let last='',baseline=null;
  const safeURL=(value,image=false)=>{if(typeof value!=='string'||!value.trim())return null;if(image&&/^data:image\/(png|jpeg|webp);base64,/.test(value))return value;try{const url=new URL(value,root);return (['http:','https:'].includes(url.protocol)||(!image&&['tel:','mailto:'].includes(url.protocol)))?url.href:null;}catch{return null;}};
- async function refresh(){
+ async function refresh(override){
   if(document.hidden)return;
-  try{const response=await fetch(new URL('content/site.json',root),{cache:'no-store'});if(!response.ok)return;const raw=await response.text();if(raw===last)return;const data=JSON.parse(raw);const page=data.pages?.find(p=>p.path===path);if(!page)return;
+  try{const response=await fetch(new URL('content/site.json',root),{cache:'no-store'});if(!response.ok)return;const raw=override?.pages?JSON.stringify(override):await response.text();if(raw===last)return;const data=JSON.parse(raw);const page=data.pages?.find(p=>p.path===path);if(!page)return;
    if(!baseline)baseline=new Map(page.fields.map(f=>[f.id,f.value]));
    document.querySelectorAll('[data-cms-hidden]').forEach(node=>{node.hidden=false;delete node.dataset.cmsHidden;});
    page.fields.forEach(field=>{const original=originals.get(field.id);if(!original)return;const node=document.querySelector(`[data-cms-id="${field.id}"]`);if(!node)return;
@@ -24,5 +24,6 @@
   }catch{/* Keep the existing page usable when offline or during deployment. */}
  }
  document.addEventListener('gdd:news-updated',()=>{last='';refresh();});
- refresh();setInterval(refresh,15000);document.addEventListener('visibilitychange',refresh);
+ window.addEventListener('message',event=>{if(event.origin===location.origin&&event.source===parent&&parent!==window&&event.data?.type==='gdd-preview')refresh(event.data.site).then(()=>{if(!event.data.focus)return;const target=document.querySelector('[data-cms-id="'+event.data.focus+'"]');const slide=target?.closest('.hero-slide');if(slide){document.querySelectorAll('.hero-slide').forEach(n=>n.classList.toggle('is-active',n===slide));}target?.scrollIntoView({block:'center'});});});
+ refresh();if(!new URLSearchParams(location.search).has('editor-preview')){setInterval(refresh,15000);document.addEventListener('visibilitychange',refresh);}
 })();

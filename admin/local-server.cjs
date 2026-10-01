@@ -9,13 +9,14 @@ const server=http.createServer(async(req,res)=>{
   const cookie=(req.headers.cookie||'').split(';').some(value=>value.trim()===`gdd_admin=${token}`);
   if(!cookie){json(res,401,{error:'กรุณาเปิดหน้าแอดมินใหม่'});return;}
   if(url.pathname==='/api/admin'&&req.method==='GET'){json(res,200,{local:true});return;}
-  const match=url.pathname.match(/^\/api\/save\/(site|news|teachers)$/);
+  const match=url.pathname.match(/^\/api\/save\/(site|news|teachers|collections)$/);
   if(!match||req.method!=='POST'){json(res,404,{error:'ไม่พบคำสั่ง'});return;}
   if(req.headers.origin!==origin||!/^application\/json\b/.test(req.headers['content-type']||'')){json(res,403,{error:'บันทึกได้จากหน้าแอดมินบนเครื่องเท่านั้น'});return;}
   try{let bytes=0;const chunks=[];for await(const chunk of req){bytes+=chunk.length;if(bytes>40*1024*1024){json(res,413,{error:'ข้อมูลใหญ่เกิน 40 MB กรุณาลดจำนวนรูป'});return;}chunks.push(chunk);}const data=JSON.parse(Buffer.concat(chunks).toString('utf8'));if(data.version!==1)throw Error('รูปแบบข้อมูลไม่ถูกต้อง');
    if(match[1]==='site'&&(!Array.isArray(data.pages)||data.pages.some(p=>!p||typeof p.path!=='string'||!Array.isArray(p.fields)||!Array.isArray(p.extras))))throw Error('ข้อมูลหน้าเว็บไม่ถูกต้อง');
    if(match[1]==='news'&&(!Array.isArray(data.posts)||data.posts.some(p=>!p||typeof p.id!=='string'||typeof p.title!=='string'||typeof p.body!=='string')))throw Error('ข้อมูลข่าวไม่ถูกต้อง');
    if(match[1]==='teachers'&&(!Array.isArray(data.teachers)||data.teachers.some(p=>!p||typeof p.id!=='string'||typeof p.name!=='string'||!['โค้ดดิ้ง','วิชาการ'].includes(p.category))))throw Error('ข้อมูลครูไม่ถูกต้อง');
+   if(match[1]==='collections'&&(!Array.isArray(data.courses)||!Array.isArray(data.gallery)))throw Error('ข้อมูลคอร์สและ Gallery ไม่ถูกต้อง');
    const target=path.join(root,'content',match[1]+'.json');const backups=path.join(root,'admin','backups');fs.mkdirSync(backups,{recursive:true});if(fs.existsSync(target))fs.copyFileSync(target,path.join(backups,match[1]+'-'+Date.now()+'-'+crypto.randomBytes(4).toString('hex')+'.json'));const temp=target+'.tmp';fs.writeFileSync(temp,JSON.stringify(data,null,2));fs.renameSync(temp,target);json(res,200,{saved:true});
   }catch(error){json(res,400,{error:error.message});}return;
  }
