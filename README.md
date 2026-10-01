@@ -24,4 +24,6 @@ GitHub Desktop → Commit to main → Push origin ระบบ .github/workflows
 
 แผนที่ใช้ Leaflet/OpenStreetMap การคำนวณถนนใช้ OSRM demo แบบ best effort พร้อมปุ่ม Google Maps สำรอง ระยะทาง/เวลาเป็นค่าประมาณ ไม่รวมรถติด เมื่อเว็บไซต์มีปริมาณการใช้งานมากควรใช้บริการ routing ที่มี SLA หรือโฮสต์ OSRM เอง
 
-ฟอนต์ แผนที่ เส้นทาง และ YouTube ต้องใช้อินเทอร์เน็ต
+ค้นหาจุดเริ่มต้น: มีรายการสถานีที่ใช้บ่อยพร้อมคำช่วยค้นหาเมื่อพิมพ์ตก และใช้ Photon (OpenStreetMap) ค้นหาสถานที่อื่น ผู้ใช้เลือกชื่อก่อนใช้พิกัด ไม่ใช้ Nominatim autocomplete
+
+ฟอนต์ แผนที่ เส้นทาง ค้นหาสถานที่ และ YouTube ต้องใช้อินเทอร์เน็ต
