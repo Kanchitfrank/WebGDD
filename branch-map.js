@@ -1,32 +1,84 @@
 const mapElement=document.querySelector('#thailand-map');
-let activeBranchMap=null,branchCleanup=null,lastUserLocation=null;
+let activeBranchMap=null,branchCleanup=null,lastUserLocation=null,lastRouteRequest=0;
 function initializeBranchMap(){
  if(!mapElement||!window.L)return;
  branchCleanup?.();activeBranchMap?.remove();document.querySelector('#branch-route')?.remove();
- const points=JSON.parse(document.querySelector('#branch-points').textContent),bounds=L.latLngBounds([[5.6,97.3],[20.6,105.7]]);
- const map=L.map(mapElement,{scrollWheelZoom:true,maxBounds:bounds.pad(.08),maxBoundsViscosity:1,zoomSnap:.25});activeBranchMap=map;map.attributionControl.addAttribution('Routes: <a href="https://project-osrm.org">OSRM</a>');
- const overview=()=>{map.setMinZoom(0);map.fitBounds(bounds,{padding:[12,12]});map.setMinZoom(map.getZoom());};
+ const points=JSON.parse(document.querySelector('#branch-points').textContent);
+ const bounds=L.latLngBounds([[5.6,97.3],[20.6,105.7]]);
+ const map=L.map(mapElement,{scrollWheelZoom:true,maxBounds:bounds.pad(.08),maxBoundsViscosity:1,zoomSnap:.25});activeBranchMap=map;
+ map.attributionControl.addAttribution('Routes: <a href="https://project-osrm.org">OSRM</a> / <a href="https://routing.openstreetmap.de/about.html">FOSSGIS</a> · <a href="https://www.openstreetmap.org/fixthemap">แก้ไขแผนที่</a>');
  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
- const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;return n;};
- const box=el('section',null,'route-box');box.id='branch-route';const title=el('h3','วางแผนไปสาขา'),result=el('p','เลือกสาขาจากหมุดหรือรายการด้านข้าง'),note=el('p','เมื่อกดหาสาขาใกล้ฉัน ระบบจะส่งตำแหน่งให้ OSRM เพื่อคำนวณเส้นทาง ไม่บันทึกตำแหน่งของคุณไว้','route-attribution');
- const label=el('label','จุดเริ่มต้นอื่น (ไม่บังคับ)'),start=el('input');start.placeholder='เช่น อนุสาวรีย์ชัยสมรภูมิ';label.append(start);const modes=el('label','เดินทางด้วย'),mode=el('select');for(const [value,text] of [['driving','รถยนต์'],['transit','ขนส่งสาธารณะ'],['walking','เดิน']]){const o=el('option',text);o.value=value;mode.append(o);}modes.append(mode);
- const actions=el('div',null,'route-actions'),google=el('a','คำนวณ / นำทางใน Google Maps ↗','button primary'),locate=el('button','ใช้ตำแหน่งของฉัน','button outline');google.target='_blank';google.rel='noopener';actions.append(google,locate);const attribution=el('p',null,'route-attribution');const source=el('a','เส้นทางโดย OSRM');source.href='https://project-osrm.org';source.target='_blank';source.rel='noopener';attribution.append(source,document.createTextNode(' · ข้อมูล OpenStreetMap · เวลาโดยประมาณ ไม่รวมรถติด'));const manual=el('details'),summary=el('summary','เลือกจุดเริ่มต้นหรือวิธีเดินทางเอง');manual.append(summary,label,modes);box.append(title,result,actions,manual);document.querySelector('.locations-layout').before(box);
- let manualOrigin=null;const getOrigin=()=>start.value.trim()?manualOrigin?.coordinates||null:lastUserLocation;
- let selected=null,userMarker=null,line=null,controller=null,request=0,routeTimer,popupTimer,resizeTimer;const cache=new Map();
- function googleURL(){if(selected===null){google.hidden=true;return;}google.hidden=false;const url=new URL('https://www.google.com/maps/dir/');url.searchParams.set('api','1');url.searchParams.set('destination',points[selected].coordinates.join(','));url.searchParams.set('travelmode',mode.value);const origin=manualOrigin?.coordinates?.join(',')||start.value.trim()||(lastUserLocation?lastUserLocation.join(','):'');if(origin)url.searchParams.set('origin',origin);google.href=url.href;}
- function clearRoute(){controller?.abort();request++;clearTimeout(routeTimer);if(line){map.removeLayer(line);line=null;}}
- async function calculate(){if(selected===null||!getOrigin()||mode.value!=='driving')return;const index=selected,id=++request,from=getOrigin().slice(),to=points[index].coordinates,key=from.join(',')+';'+to.join(',');controller?.abort();controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),10000);result.textContent='กำลังคำนวณเส้นทางขับรถ…';try{let route=cache.get(key);if(!route){const coordinates=[from,to].map(([lat,lng])=>lng+','+lat).join(';');const response=await fetch('https://router.project-osrm.org/route/v1/driving/'+coordinates+'?overview=full&geometries=geojson&steps=false',{signal:controller.signal});if(!response.ok)throw Error();const data=await response.json();route=data.code==='Ok'?data.routes?.[0]:null;if(!route||!Number.isFinite(route.distance)||!Number.isFinite(route.duration)||route.geometry?.type!=='LineString')throw Error();cache.set(key,route);}if(id!==request||selected!==index)return;if(line)map.removeLayer(line);line=L.geoJSON(route.geometry,{style:{color:'#234be4',weight:5,opacity:.85}}).addTo(map);map.fitBounds(line.getBounds(),{padding:[35,35],maxZoom:14});const minutes=Math.ceil(route.duration/60),time=minutes>=60?Math.floor(minutes/60)+' ชม. '+minutes%60+' นาที':minutes+' นาที';result.textContent=`ไป ${points[index].name} · ${(route.distance/1000).toLocaleString('th-TH',{maximumFractionDigits:1})} กม. · ประมาณ ${time}`;}catch{if(id===request)result.textContent='คำนวณในแผนที่ไม่สำเร็จ กด Google Maps เพื่อคำนวณและนำทางได้เลย';}finally{clearTimeout(timeout);}}
- function selectRoute(index){clearRoute();selected=index;title.textContent='เส้นทางไป '+points[index].name;googleURL();result.textContent=getOrigin()&&mode.value==='driving'?'กำลังเตรียมเส้นทาง…':'เลือกจุดเริ่มต้น แล้วกด Google Maps เพื่อคำนวณการเดินทาง';if(getOrigin()&&mode.value==='driving')routeTimer=setTimeout(calculate,450);}
+ const overview=()=>{map.setMinZoom(0);map.fitBounds(bounds,{padding:[12,12]});map.setMinZoom(map.getZoom());};
+ const el=(tag,text,cls)=>{const node=document.createElement(tag);if(text)node.textContent=text;if(cls)node.className=cls;return node;};
+ const box=el('section',null,'route-box');box.id='branch-route';
+ const title=el('h3','วางแผนไปสาขา'),result=el('p','เลือกจุดเริ่มต้นจากช่องค้นหา หรือกดหาสาขาใกล้ฉัน','route-result');result.setAttribute('role','status');
+ const label=el('label','จุดเริ่มต้น'),start=el('input');label.append(start);
+ const modes=el('label','เดินทางด้วย'),mode=el('select');
+ for(const [value,text] of [['driving','รถยนต์'],['walking','เดิน'],['transit','ขนส่งสาธารณะ (Google Maps)']]){const option=el('option',text);option.value=value;mode.append(option);}modes.append(mode);
+ const destinationLabel=el('label','เลือกสาขาที่ต้องการไป'),destination=el('select');const placeholder=el('option','เลือกสาขา');placeholder.value='';destination.append(placeholder);for(const [index,point] of points.entries()){const option=el('option',point.name);option.value=String(index);destination.append(option);}destinationLabel.append(destination);
+ const manual=el('div',null,'route-origin-fields');manual.append(label,destinationLabel,modes);
+ const actions=el('div',null,'route-actions'),calculateButton=el('button','คำนวณเส้นทาง','button primary'),google=el('a','นำทางต่อใน Google Maps ↗','button outline');calculateButton.type='button';google.target='_blank';google.rel='noopener';google.hidden=true;actions.append(calculateButton,google);
+ box.append(title,manual,result,actions);document.querySelector('.locations-layout').before(box);
+ let manualOrigin=null,selected=null,userMarker=null,line=null,controller=null,request=0,routeTimer,popupTimer,resizeTimer,hasRoute=false;
+ const cache=new Map(),getOrigin=()=>start.value.trim()?manualOrigin?.coordinates||null:lastUserLocation;
+ const locateButton=document.querySelector('#find-nearest'),locationStatus=document.querySelector('#location-status');locationStatus.textContent='';
+ function googleURL(){
+  const origin=getOrigin();google.hidden=selected===null||!origin||(!hasRoute&&mode.value!=='transit');
+  if(selected===null)return;const url=new URL('https://www.google.com/maps/dir/');url.searchParams.set('api','1');url.searchParams.set('destination',points[selected].coordinates.join(','));url.searchParams.set('travelmode',mode.value);if(origin)url.searchParams.set('origin',origin.join(','));google.href=url.href;
+ }
+ function clearRoute(){controller?.abort();request++;clearTimeout(routeTimer);calculateButton.disabled=false;hasRoute=false;if(line){map.removeLayer(line);line=null;}googleURL();}
+ function showOrigin(){if(userMarker){map.removeLayer(userMarker);userMarker=null;}const origin=getOrigin();if(origin&&bounds.contains(origin))userMarker=L.circleMarker(origin,{radius:9,color:'white',weight:3,fillColor:'#173cc0',fillOpacity:1}).addTo(map).bindTooltip(manualOrigin?.name||'ตำแหน่งของคุณ');}
+ function nearest(origin){const distances=points.map(point=>L.latLng(origin).distanceTo(L.latLng(point.coordinates)));return distances.indexOf(Math.min(...distances));}
+ async function calculate(){
+  clearTimeout(routeTimer);const origin=getOrigin();
+  if(!origin){result.textContent=start.value.trim()?'เลือกสถานที่จากรายการแนะนำก่อนคำนวณ':'พิมพ์จุดเริ่มต้น หรือกดหาสาขาใกล้ฉัน';if(start.value.trim())placeSearch?.search();return;}
+  if(selected===null){choose(nearest(origin));return;}
+  if(mode.value==='transit'){result.textContent='เส้นทางรถเมล์และรถไฟฟ้าดูได้ใน Google Maps';googleURL();return;}
+  const index=selected,travelMode=mode.value,id=++request,from=origin.slice(),to=points[index].coordinates;
+  const key=travelMode+':'+from.join(',')+';'+to.join(',');controller?.abort();const routeController=new AbortController();controller=routeController;
+  const timeout=setTimeout(()=>routeController.abort(),12000);calculateButton.disabled=true;result.textContent=travelMode==='walking'?'กำลังคำนวณเส้นทางเดิน…':'กำลังคำนวณเส้นทางรถยนต์…';
+  try{
+   let route=cache.get(key);
+   if(!route){
+    const wait=Math.max(0,1100-(Date.now()-lastRouteRequest));if(wait)await new Promise(resolve=>setTimeout(resolve,wait));
+    if(id!==request||routeController.signal.aborted)return;lastRouteRequest=Date.now();
+    const coordinates=[from,to].map(([lat,lng])=>lng+','+lat).join(';');
+    const endpoint=travelMode==='walking'?'https://routing.openstreetmap.de/routed-foot/route/v1/driving/':'https://router.project-osrm.org/route/v1/driving/';
+    const response=await fetch(endpoint+coordinates+'?overview=full&geometries=geojson&steps=false',{signal:routeController.signal});if(!response.ok)throw Error();
+    const data=await response.json();route=data.code==='Ok'?data.routes?.[0]:null;
+    if(!route||!Number.isFinite(route.distance)||!Number.isFinite(route.duration)||route.geometry?.type!=='LineString')throw Error();cache.set(key,route);
+   }
+   if(id!==request||index!==selected||travelMode!==mode.value)return;
+   if(line)map.removeLayer(line);line=L.geoJSON(route.geometry,{style:{color:'#234be4',weight:5,opacity:.85}}).addTo(map);
+   map.fitBounds(line.getBounds(),{padding:[35,35],maxZoom:14});map.closePopup();
+   const minutes=Math.ceil(route.duration/60),time=minutes>=60?Math.floor(minutes/60)+' ชม. '+minutes%60+' นาที':minutes+' นาที';
+   result.textContent=(travelMode==='walking'?'เดิน':'รถยนต์')+' · '+(route.distance/1000).toLocaleString('th-TH',{maximumFractionDigits:1})+' กม. · ประมาณ '+time;hasRoute=true;googleURL();
+  }catch{if(id===request){result.textContent='คำนวณไม่สำเร็จ ลองอีกครั้งหรือนำทางต่อใน Google Maps';hasRoute=true;googleURL();}}
+  finally{clearTimeout(timeout);if(id===request)calculateButton.disabled=false;}
+ }
+ function selectRoute(index){clearRoute();calculateButton.disabled=false;selected=index;destination.value=String(index);title.textContent='เส้นทางไป '+points[index].name;googleURL();if(getOrigin()){result.textContent='กำลังเตรียมเส้นทาง…';routeTimer=setTimeout(calculate,450);}else result.textContent='เลือกจุดเริ่มต้นจากช่องค้นหา หรือกดหาสาขาใกล้ฉัน';}
  const closePopup=()=>{clearTimeout(popupTimer);popupTimer=setTimeout(()=>map.closePopup(),350);};
- const markers=points.map((p,index)=>{const content=el('div'),img=el('img',null,'branch-popup-photo');img.src=p.image;img.alt=p.name;const link=el('button','คำนวณเส้นทางไปสาขานี้','map-route-button');link.type='button';link.onclick=()=>selectRoute(index);content.append(img,el('strong',p.name),el('p',p.address),link);content.onmouseenter=()=>clearTimeout(popupTimer);content.onmouseleave=closePopup;const marker=L.circleMarker(p.coordinates,{radius:8,color:'white',weight:2,fillColor:'#ef454c',fillOpacity:1}).addTo(map).bindPopup(content,{maxWidth:280,autoPan:false});if(matchMedia('(hover:hover)').matches){marker.on('mouseover',()=>{clearTimeout(popupTimer);marker.openPopup();});marker.on('mouseout',closePopup);}marker.on('click',()=>choose(index));return marker;});
+ const markers=points.map((point,index)=>{
+  const content=el('div'),img=el('img',null,'branch-popup-photo');img.src=point.image;img.alt=point.name;
+  const link=el('button','คำนวณเส้นทางไปสาขานี้','map-route-button');link.type='button';link.onclick=()=>selectRoute(index);content.append(img,el('strong',point.name),el('p',point.address),link);
+  content.onmouseenter=()=>clearTimeout(popupTimer);content.onmouseleave=closePopup;
+  const marker=L.circleMarker(point.coordinates,{radius:8,color:'white',weight:2,fillColor:'#ef454c',fillOpacity:1}).addTo(map).bindPopup(content,{maxWidth:280,autoPan:false});
+  if(matchMedia('(hover:hover)').matches){marker.on('mouseover',()=>{clearTimeout(popupTimer);marker.openPopup();});marker.on('mouseout',closePopup);}marker.on('click',()=>choose(index));return marker;
+ });
  function choose(index){map.setView(points[index].coordinates,15);markers[index].openPopup();document.querySelectorAll('[data-branch]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.branch)===index)));selectRoute(index);}
  document.querySelectorAll('[data-branch]').forEach(button=>button.onclick=()=>{choose(Number(button.dataset.branch));if(innerWidth<850)mapElement.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});});
- const overviewButton=document.querySelector('[data-map-overview]');overviewButton.onclick=()=>{clearRoute();map.closePopup();overview();document.querySelectorAll('[data-branch]').forEach(b=>b.setAttribute('aria-pressed','false'));};
- const locateButton=document.querySelector('#find-nearest'),locationStatus=document.querySelector('#location-status');locationStatus.textContent='';
- function showUser(){if(userMarker)map.removeLayer(userMarker);const origin=getOrigin();if(origin&&bounds.contains(origin))userMarker=L.circleMarker(origin,{radius:9,color:'white',weight:3,fillColor:'#173cc0',fillOpacity:1}).addTo(map).bindTooltip(manualOrigin?.name||'ตำแหน่งของคุณ');}
- const locateUser=(destination=null)=>{if(!navigator.geolocation||!isSecureContext){locationStatus.textContent='ใช้ตำแหน่งไม่ได้ กรอกจุดเริ่มต้นในช่องเส้นทางได้เลย';return;}locateButton.disabled=true;locate.disabled=true;locationStatus.textContent='กำลังหาตำแหน่ง กรุณาอนุญาตในเบราว์เซอร์';navigator.geolocation.getCurrentPosition(position=>{lastUserLocation=[position.coords.latitude,position.coords.longitude];manualOrigin=null;placeSearch?.clear();start.value='';showUser();const distances=points.map(p=>L.latLng(lastUserLocation).distanceTo(L.latLng(p.coordinates))),nearest=distances.indexOf(Math.min(...distances));choose(destination===null?nearest:destination);locationStatus.textContent=destination!==null?'กำลังคำนวณไป '+points[destination].name:'ใกล้ที่สุดตามระยะเส้นตรง: '+points[nearest].name+' · เลือกสาขาอื่นเพื่อเปรียบเทียบเส้นทางได้';locateButton.disabled=false;locate.disabled=false;},error=>{locationStatus.textContent=error.code===1?'ไม่ได้อนุญาตตำแหน่ง กรอกจุดเริ่มต้นแล้วเปิด Google Maps ได้':'ยังหาตำแหน่งไม่ได้ ลองอีกครั้งหรือกรอกจุดเริ่มต้น';locateButton.disabled=false;locate.disabled=false;},{enableHighAccuracy:false,timeout:12000,maximumAge:60000});};
- const placeSearch=window.attachPlaceSearch?.(start,place=>{clearRoute();manualOrigin=place;showUser();if(place.coordinates&&selected===null){const distances=points.map(p=>L.latLng(place.coordinates).distanceTo(L.latLng(p.coordinates)));choose(distances.indexOf(Math.min(...distances)));}else if(selected!==null)selectRoute(selected);else result.textContent='เลือกสาขาที่ต้องการไป';googleURL();});
- locateButton.onclick=()=>locateUser();locate.onclick=()=>locateUser(selected);start.oninput=()=>{manualOrigin=null;clearRoute();showUser();googleURL();result.textContent=start.value.trim()?'กด Google Maps เพื่อคำนวณจากจุดเริ่มต้นที่กรอก':'กดใช้ตำแหน่งของฉันเพื่อแสดงเส้นทาง';if(!start.value.trim()&&lastUserLocation)routeTimer=setTimeout(calculate,450);};mode.onchange=()=>{clearRoute();googleURL();result.textContent=mode.value==='driving'&&getOrigin()?'กำลังเตรียมเส้นทาง…':'กด Google Maps เพื่อคำนวณการเดินทางแบบที่เลือก';if(mode.value==='driving')calculate();};googleURL();overview();showUser();
- const resize=()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>map.invalidateSize(),150);};window.addEventListener('resize',resize);branchCleanup=()=>{placeSearch?.dispose();clearRoute();clearTimeout(popupTimer);clearTimeout(resizeTimer);window.removeEventListener('resize',resize);};
+ document.querySelector('[data-map-overview]').onclick=()=>{clearRoute();calculateButton.disabled=false;selected=null;destination.value='';title.textContent='วางแผนไปสาขา';result.textContent='เลือกสาขาที่ต้องการไป';map.closePopup();overview();googleURL();document.querySelectorAll('[data-branch]').forEach(button=>button.setAttribute('aria-pressed','false'));};
+ const placeSearch=window.attachPlaceSearch?.(start,place=>{clearRoute();manualOrigin=place;showOrigin();if(place.coordinates)choose(selected===null?nearest(place.coordinates):selected);else result.textContent='ยังหาพิกัดไม่พบ ลองเลือกสถานที่ใกล้เคียง';},()=>points[selected??0].coordinates);
+ start.oninput=()=>{manualOrigin=null;clearRoute();calculateButton.disabled=false;showOrigin();result.textContent=start.value.trim()?'เลือกสถานที่จากรายการแนะนำ':'พิมพ์จุดเริ่มต้น หรือกดหาสาขาใกล้ฉัน';if(!start.value.trim()&&lastUserLocation&&selected!==null)routeTimer=setTimeout(calculate,450);};
+ destination.onchange=()=>{if(destination.value!=='')choose(Number(destination.value));else{clearRoute();selected=null;title.textContent='วางแผนไปสาขา';googleURL();result.textContent='เลือกสาขาที่ต้องการไป';document.querySelectorAll('[data-branch]').forEach(button=>button.setAttribute('aria-pressed','false'));}};
+ mode.onchange=()=>{clearRoute();calculateButton.disabled=false;if(getOrigin()&&selected!==null)calculate();else result.textContent='เลือกจุดเริ่มต้นและสาขาที่ต้องการไป';};calculateButton.onclick=calculate;
+ locateButton.onclick=()=>{
+  if(!navigator.geolocation||!isSecureContext){locationStatus.textContent='ใช้ตำแหน่งไม่ได้ พิมพ์จุดเริ่มต้นในช่องค้นหาได้เลย';return;}
+  locateButton.disabled=true;locationStatus.textContent='กำลังหาตำแหน่ง กรุณาอนุญาตในเบราว์เซอร์';
+  navigator.geolocation.getCurrentPosition(position=>{lastUserLocation=[position.coords.latitude,position.coords.longitude];manualOrigin=null;placeSearch?.clear();start.value='';showOrigin();const index=nearest(lastUserLocation);locationStatus.textContent='สาขาที่ใกล้คุณ: '+points[index].name;choose(index);locateButton.disabled=false;},error=>{locationStatus.textContent=error.code===1?'ไม่ได้อนุญาตตำแหน่ง พิมพ์จุดเริ่มต้นในช่องค้นหาได้':'ยังหาตำแหน่งไม่ได้ ลองอีกครั้งหรือพิมพ์จุดเริ่มต้น';locateButton.disabled=false;},{enableHighAccuracy:false,timeout:12000,maximumAge:60000});
+ };
+ googleURL();overview();showOrigin();
+ const resize=()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>map.invalidateSize(),150);};window.addEventListener('resize',resize);
+ branchCleanup=()=>{placeSearch?.dispose();clearRoute();clearTimeout(popupTimer);clearTimeout(resizeTimer);window.removeEventListener('resize',resize);};
 }
 initializeBranchMap();document.addEventListener('gdd:branches-updated',initializeBranchMap);
