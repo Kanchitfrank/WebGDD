@@ -20,7 +20,7 @@
    article.append(el('div',post.body||'','article-copy news-article-body'));return;
   }
   feeds.forEach(feed=>{
-   feed.replaceChildren(...originalCards.get(feed).map(card=>card.cloneNode(true)));
+   feed.replaceChildren();
    posts.forEach(post=>{
     const card=el('article',null,'news-card');const url=new URL('news/article/index.html',root);url.searchParams.set('id',post.id);
     if(safeImage(post.image)){const link=el('a',null,'story-image-link');link.href=url;link.setAttribute('aria-label',post.title);const img=el('img');img.src=post.image.startsWith('data:')?post.image:new URL(post.image,root);img.alt=post.title;img.loading='lazy';link.append(img);card.append(link);}

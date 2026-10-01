@@ -42,7 +42,7 @@ if(mapElement&&window.L){
  if(activeBranchMap)activeBranchMap.remove();
  const points=JSON.parse(document.querySelector('#branch-points').textContent);
  const thailandBounds=L.latLngBounds([[5.6,97.3],[20.6,105.7]]);
- const map=L.map(mapElement,{scrollWheelZoom:false,maxBounds:thailandBounds.pad(.08),maxBoundsViscosity:1,zoomSnap:.25});
+ const map=L.map(mapElement,{scrollWheelZoom:true,maxBounds:thailandBounds.pad(.08),maxBoundsViscosity:1,zoomSnap:.25});
  activeBranchMap=map;
  const overview=()=>{map.setMinZoom(0);map.fitBounds(thailandBounds,{padding:[12,12]});map.setMinZoom(map.getZoom());};
  let resizeTimer;

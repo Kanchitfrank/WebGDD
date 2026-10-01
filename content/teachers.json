@@ -1,0 +1,355 @@
+{
+  "version": 1,
+  "teachers": [
+    {
+      "id": "coding-0",
+      "name": "ครูแฟรงค์",
+      "fullName": "ครรชิต กลิ่นศรีสุข",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Unity · Unreal Engine · Roblox · Scratch",
+      "bio": "สอนพัฒนาเกมผ่านการลงมือทำ ส่งเสริมการคิดวิเคราะห์ ความคิดสร้างสรรค์ และการแก้ปัญหา",
+      "image": "assets/coding-0.webp",
+      "published": true
+    },
+    {
+      "id": "coding-1",
+      "name": "ครูกิม",
+      "fullName": "พงศ์กฤต ยิ่งยงธนสาร",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Python · AI for Kids · AI for Teens",
+      "bio": "ถ่ายทอดเทคโนโลยีให้เข้าใจง่าย พร้อมฝึกสร้างและเทรน AI เพื่อนำไปประยุกต์ใช้",
+      "image": "assets/coding-1.webp",
+      "published": true
+    },
+    {
+      "id": "coding-2",
+      "name": "ครูลิงค์",
+      "fullName": "นวพรรษ ทองพิทักษ์",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Python · สอวน.คอมพิวเตอร์ · UX/UI",
+      "bio": "ฝึกเขียนโปรแกรมและแก้ปัญหาในบรรยากาศการเรียนที่สนุก",
+      "image": "assets/coding-2.webp",
+      "published": true
+    },
+    {
+      "id": "coding-3",
+      "name": "ครูแคน",
+      "fullName": "ถิรพุทธิ์ ติระพงศ์ธวัช",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Python · AI · Computer Vision",
+      "bio": "เชี่ยวชาญด้าน AI การประมวลผลภาพ และการรู้จำใบหน้า เน้นนำความรู้ไปใช้จริง",
+      "image": "assets/coding-3.webp",
+      "published": true
+    },
+    {
+      "id": "coding-4",
+      "name": "ครูตอง",
+      "fullName": "ปทุม เภรีประยูรพร",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Coding · AI · การสร้างเกม",
+      "bio": "สอนเป็นขั้นตอนและฝึกประยุกต์ใช้เครื่องมือเพื่อสร้างผลงาน",
+      "image": "assets/coding-4.webp",
+      "published": true
+    },
+    {
+      "id": "coding-5",
+      "name": "ครูนิน",
+      "fullName": "พัชรดนัย สุขสอาด",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Coding · IoT · Portfolio",
+      "bio": "ฝึกสร้างโครงงานดิจิทัล ตั้งแต่พื้นฐานจนถึงโครงงานเพื่อเตรียมพอร์ต",
+      "image": "assets/coding-5.webp",
+      "published": true
+    },
+    {
+      "id": "coding-6",
+      "name": "ครูออย",
+      "fullName": "ภัทรฤทัย แท่นทอง",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Coding · AI",
+      "bio": "ปูพื้นฐานด้วยการลงมือทำ อธิบายเป็นขั้นตอนและช่วยสร้างความมั่นใจ",
+      "image": "assets/coding-6.webp",
+      "published": true
+    },
+    {
+      "id": "coding-7",
+      "name": "ครูเมฆ",
+      "fullName": "ถิรภัทร เกษรบัว",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Roblox · Arduino · Robotics",
+      "bio": "ฝึกเขียนโปรแกรมและสร้างโครงงานหุ่นยนต์ให้เด็กเข้าใจและสนุกกับการเรียน",
+      "image": "assets/coding-7.webp",
+      "published": true
+    },
+    {
+      "id": "coding-8",
+      "name": "ครูชิน",
+      "fullName": "ชินวัตร วงศ์ปทมเจริญ",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Roblox Studio · Lua",
+      "bio": "ฝึกคิดตรรกะ ออกแบบขั้นตอน และเขียนโปรแกรมสร้างเกม Roblox",
+      "image": "assets/coding-8.webp",
+      "published": true
+    },
+    {
+      "id": "coding-9",
+      "name": "ครูอูโน่",
+      "fullName": "ศุภฤกษ์ ศรีธัญรัตน์",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Roblox Studio · Python",
+      "bio": "อธิบายหลักการเขียนโค้ดสำหรับผู้เริ่มต้น เพื่อให้ต่อยอดได้",
+      "image": "assets/coding-9.webp",
+      "published": true
+    },
+    {
+      "id": "coding-10",
+      "name": "ครูเคนโด้",
+      "fullName": "",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Scratch · Roblox · Python · HKICO",
+      "bio": "ปูพื้นฐานการคิดเชิงคำนวณ สร้างเกม และเตรียมความพร้อมด้านการแข่งขัน",
+      "image": "assets/coding-10.webp",
+      "published": true
+    },
+    {
+      "id": "coding-11",
+      "name": "ครูอ๋อม",
+      "fullName": "",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Scratch",
+      "bio": "สอนเด็กเริ่มเขียนโค้ดผ่านการสร้างเกม พร้อมฝึกคิดเชิงตรรกะ",
+      "image": "assets/coding-11.webp",
+      "published": true
+    },
+    {
+      "id": "coding-12",
+      "name": "ครูต้าร์",
+      "fullName": "",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Coding · การพัฒนาซอฟต์แวร์",
+      "bio": "ถ่ายทอดการเขียนโปรแกรมให้ผู้เริ่มต้นเข้าใจ และฝึกนำความรู้ไปประยุกต์ใช้",
+      "image": "assets/coding-12.webp",
+      "published": true
+    },
+    {
+      "id": "coding-13",
+      "name": "ครูยอด",
+      "fullName": "ดร.นรพล ดีช่วย",
+      "category": "โค้ดดิ้ง",
+      "subjects": "ออกแบบหลักสูตร · การเรียนรู้ผ่านเกม",
+      "bio": "ออกแบบหลักสูตรและแนวทางการใช้เกมเป็นเครื่องมือสอนเขียนโปรแกรม",
+      "image": "assets/coding-13.webp",
+      "published": true
+    },
+    {
+      "id": "coding-14",
+      "name": "พงษ์ระพี เตชพาหพงษ์",
+      "fullName": "",
+      "category": "โค้ดดิ้ง",
+      "subjects": "AI · Innovation · Prompt Engineering",
+      "bio": "เชี่ยวชาญด้าน AI และนวัตกรรม",
+      "image": "assets/coding-14.webp",
+      "published": true
+    },
+    {
+      "id": "coding-15",
+      "name": "ครูแน็ค",
+      "fullName": "ทินภัทร ทูลไธสง",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Roblox · Python",
+      "bio": "ฝึกเขียนโค้ดและสร้างเกม โดยอธิบายให้เด็กนำไปต่อยอดการเรียนได้",
+      "image": "assets/coding-15.webp",
+      "published": true
+    },
+    {
+      "id": "coding-16",
+      "name": "ครูอันวา",
+      "fullName": "อันวา อะสมาน",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Scratch · Roblox · Python",
+      "bio": "ฝึกคิดเชิงคำนวณจากบล็อกคำสั่งไปสู่การสร้างเกมและภาษาโปรแกรม",
+      "image": "assets/coding-16.webp",
+      "published": true
+    },
+    {
+      "id": "coding-17",
+      "name": "ครูเก่ง",
+      "fullName": "ธีรภาพ จงธนะวัฒน์",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Unity · Game Development",
+      "bio": "สอนพัฒนาเกมด้วยการลงมือทำ เพื่อให้นักเรียนสร้างผลงานด้วยตัวเอง",
+      "image": "assets/coding-17.webp",
+      "published": true
+    },
+    {
+      "id": "coding-18",
+      "name": "ครูกู๊ดดี้",
+      "fullName": "กมุท ขรรค์บริวาร",
+      "category": "โค้ดดิ้ง",
+      "subjects": "Scratch · Roblox · Java",
+      "bio": "ต่อยอดจากพื้นฐานตรรกะ สู่เกม 3 มิติและการเขียนโปรแกรมเชิงวัตถุ",
+      "image": "assets/coding-18.webp",
+      "published": true
+    },
+    {
+      "id": "academic-19",
+      "name": "ครูพี่หมอเล้ง",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "คณิตศาสตร์ · เตรียมสอบ ม.4",
+      "bio": "",
+      "image": "assets/academic-1.webp",
+      "published": true
+    },
+    {
+      "id": "academic-20",
+      "name": "ครูพี่เชอร์เวย์",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "คณิตศาสตร์ · สอวน.คณิตศาสตร์",
+      "bio": "",
+      "image": "assets/academic-2.webp",
+      "published": true
+    },
+    {
+      "id": "academic-21",
+      "name": "ครูพี่ภูเขา",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "คณิตศาสตร์ · สอวน.คณิตศาสตร์",
+      "bio": "",
+      "image": "assets/academic-5.webp",
+      "published": true
+    },
+    {
+      "id": "academic-22",
+      "name": "ครูพี่เต้",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "วิทยาศาสตร์ · คณิตศาสตร์",
+      "bio": "",
+      "image": "assets/academic-8.webp",
+      "published": true
+    },
+    {
+      "id": "academic-23",
+      "name": "ครูพี่เดียร์",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "คณิตศาสตร์ · A-Level",
+      "bio": "",
+      "image": "assets/academic-9.webp",
+      "published": true
+    },
+    {
+      "id": "academic-24",
+      "name": "ครูพี่สกาย",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "คณิตศาสตร์ · การแข่งขัน",
+      "bio": "",
+      "image": "assets/academic-10.webp",
+      "published": true
+    },
+    {
+      "id": "academic-25",
+      "name": "Kru Ben",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "Mathematics · หลักสูตรนานาชาติ",
+      "bio": "",
+      "image": "assets/academic-11.webp",
+      "published": true
+    },
+    {
+      "id": "academic-26",
+      "name": "ครูนุ่น",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "คณิตศาสตร์ · ประถมและมัธยม",
+      "bio": "",
+      "image": "assets/academic-12.webp",
+      "published": true
+    },
+    {
+      "id": "academic-27",
+      "name": "ครูพี่แป้ง",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "ภาษาอังกฤษ",
+      "bio": "",
+      "image": "assets/academic-13.webp",
+      "published": true
+    },
+    {
+      "id": "academic-28",
+      "name": "ครูพี่ไทค์",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "ฟิสิกส์ · IJSO · สอวน.",
+      "bio": "",
+      "image": "assets/academic-14.webp",
+      "published": true
+    },
+    {
+      "id": "academic-29",
+      "name": "ครูพี่หมอลูกตาล",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "คณิตศาสตร์ · วิทยาศาสตร์ · ภาษาไทย",
+      "bio": "",
+      "image": "assets/academic-15.webp",
+      "published": true
+    },
+    {
+      "id": "academic-30",
+      "name": "ครูจิ๊บ",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "คณิตศาสตร์ · A-Level",
+      "bio": "",
+      "image": "assets/academic-16.webp",
+      "published": true
+    },
+    {
+      "id": "academic-31",
+      "name": "ครูแชมป์",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "สังคมศึกษา",
+      "bio": "",
+      "image": "assets/academic-17.webp",
+      "published": true
+    },
+    {
+      "id": "academic-32",
+      "name": "ครูเตย",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "ภาษาไทย",
+      "bio": "",
+      "image": "assets/academic-19.webp",
+      "published": true
+    },
+    {
+      "id": "academic-33",
+      "name": "ครูครุ้ม",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "ภาษาอังกฤษ",
+      "bio": "",
+      "image": "assets/academic-20.webp",
+      "published": true
+    },
+    {
+      "id": "academic-34",
+      "name": "ครูอรุณ",
+      "fullName": "",
+      "category": "วิชาการ",
+      "subjects": "คณิตศาสตร์ · เตรียมสอบ ม.1 และ ม.4",
+      "bio": "",
+      "image": "assets/academic-21.webp",
+      "published": true
+    }
+  ]
+}

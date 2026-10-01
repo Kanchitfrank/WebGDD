@@ -1,0 +1,7 @@
+(() => {
+ const root=new URL('.',document.currentScript.src),grids=[...document.querySelectorAll('.team-grid')];let last='';
+ const el=(tag,value,cls)=>{const n=document.createElement(tag);if(value)n.textContent=value;if(cls)n.className=cls;return n;};
+ async function refresh(){if(document.hidden)return;try{const r=await fetch(new URL('content/teachers.json',root),{cache:'no-store'});if(!r.ok)return;const data=await r.json(),serialized=JSON.stringify(data);if(serialized===last)return;last=serialized;
+ for(const grid of grids){const category=grid.classList.contains('academic-grid')?'วิชาการ':'โค้ดดิ้ง';let records=data.teachers.filter(t=>t.published&&t.category===category);if(location.pathname.includes('/about/'))records=records.slice(0,3);grid.replaceChildren();for(const t of records){const card=el('article',null,'teacher-card');if(/^(assets\/|data:image\/(png|jpeg|webp);base64,)/.test(t.image)){const a=el('a',null,'profile-poster');a.href=t.image.startsWith('data:')?t.image:new URL(t.image,root);a.target='_blank';a.rel='noopener';const img=el('img');img.src=a.href;img.alt=t.name;img.loading='lazy';a.append(img);card.append(a);}const copy=el('div',null,'card-copy');copy.append(el('h3',t.name),el('p',t.fullName,'teacher-name'),el('span',t.subjects,'subject'),el('p',t.bio,'teacher-bio'));card.append(copy);grid.append(card);}}
+ }catch{}}refresh();setInterval(refresh,15000);document.addEventListener('visibilitychange',refresh);
+})();
