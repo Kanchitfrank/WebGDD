@@ -9,7 +9,7 @@
  let last='';
  function refresh(override){if(document.hidden)return;fetch(new URL('content/news.json',root),{cache:'no-store'}).then(response=>{if(!response.ok)throw Error();return override?.posts?override:response.json();}).then(data=>{
   const serialized=JSON.stringify(data);if(serialized===last)return;last=serialized;
-  const posts=(Array.isArray(data.posts)?data.posts:[]).filter(p=>p&&p.published===true&&typeof p.id==='string'&&typeof p.title==='string').sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const posts=(Array.isArray(data.posts)?data.posts:[]).filter(p=>p&&p.published===true&&typeof p.id==='string'&&typeof p.title==='string');
   if(article){
    const post=posts.find(p=>p.id===new URLSearchParams(location.search).get('id'));
    article.replaceChildren();const back=el('a','← ข่าวทั้งหมด','breadcrumb');back.href=new URL('news/index.html',root);article.append(back);

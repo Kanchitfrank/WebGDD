@@ -7,30 +7,7 @@ const lightbox=document.querySelector('#lightbox');
 document.querySelectorAll('[data-lightbox]').forEach(button=>button.addEventListener('click',()=>{const photo=lightbox.querySelector('img');photo.src=button.dataset.lightbox;photo.alt=button.dataset.caption;lightbox.querySelector('p').textContent=button.dataset.caption;lightbox.showModal();}));
 lightbox.querySelector('.close-lightbox').addEventListener('click',()=>lightbox.close());
 lightbox.addEventListener('click',event=>{if(event.target===lightbox){const bounds=lightbox.getBoundingClientRect();if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom)lightbox.close();}});
-const carousel=document.querySelector('.hero-carousel');
-if(carousel){
- const slides=[...carousel.querySelectorAll('[data-slide]')];
- const dots=[...carousel.querySelectorAll('[data-go-to]')];
- const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
- slides.forEach((slide,i)=>{slide.hidden=false;slide.classList.toggle('is-active',i===0);slide.setAttribute('aria-hidden',String(i!==0));});
- let index=0;
- let paused=reducedMotion.matches||new URLSearchParams(location.search).has("editor-preview");
- let hovered=false;
- let timer=null;
- let touchStart=null;
- const canPlay=()=>!paused&&!hovered&&!document.hidden&&!carousel.contains(document.activeElement);
- const schedule=()=>{clearTimeout(timer);timer=null;if(canPlay())timer=setTimeout(()=>show(index+1),5000);};
- const show=next=>{index=(next+slides.length)%slides.length;slides.forEach((slide,i)=>{slide.classList.toggle('is-active',i===index);slide.setAttribute('aria-hidden',String(i!==index));});dots.forEach((dot,i)=>dot.setAttribute('aria-current',String(i===index)));schedule();};
- carousel.querySelectorAll('[data-slide-step]').forEach(button=>button.addEventListener('click',()=>show(index+Number(button.dataset.slideStep))));
- dots.forEach((dot,i)=>dot.addEventListener('click',()=>show(i)));
- carousel.addEventListener('mouseenter',()=>{hovered=true;schedule();});
- carousel.addEventListener('mouseleave',()=>{hovered=false;schedule();});
- carousel.addEventListener('focusin',schedule);
- carousel.addEventListener('focusout',()=>setTimeout(schedule,0));
- carousel.addEventListener('touchstart',event=>{touchStart={x:event.changedTouches[0].clientX,y:event.changedTouches[0].clientY};clearTimeout(timer);},{passive:true});
- carousel.addEventListener('touchend',event=>{if(touchStart){const dx=event.changedTouches[0].clientX-touchStart.x;const dy=event.changedTouches[0].clientY-touchStart.y;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))show(index+(dx<0?1:-1));else schedule();touchStart=null;}},{passive:true});
- carousel.addEventListener('touchcancel',()=>{touchStart=null;schedule();},{passive:true});
- document.addEventListener('visibilitychange',schedule);
- reducedMotion.addEventListener('change',event=>{paused=event.matches;schedule();});
- schedule();
-}
+
+let carouselCleanup;
+function setupCarousel(){carouselCleanup?.();const carousel=document.querySelector('.hero-carousel');if(!carousel)return;const slides=[...carousel.querySelectorAll('[data-slide]')].sort((a,b)=>Number(a.dataset.slide)-Number(b.dataset.slide)),dots=[...carousel.querySelectorAll('[data-go-to]')];let index=0,timer,touch;const listeners=[];const on=(target,name,fn)=>{target.addEventListener(name,fn);listeners.push(()=>target.removeEventListener(name,fn));};const schedule=()=>{clearTimeout(timer);if(slides.length>1&&!document.hidden&&!carousel.matches(':hover')&&!new URLSearchParams(location.search).has('editor-preview')&&!matchMedia('(prefers-reduced-motion:reduce)').matches)timer=setTimeout(()=>show(index+1),5000);};const show=n=>{if(!slides.length)return;index=(n+slides.length)%slides.length;slides.forEach((slide,i)=>{slide.hidden=false;slide.classList.toggle('is-active',i===index);slide.setAttribute('aria-hidden',String(i!==index));});dots.forEach((d,i)=>d.setAttribute('aria-current',String(i===index)));schedule();};on(carousel,'click',e=>{const b=e.target.closest('[data-go-to],[data-slide-step]');if(b)show(b.dataset.goTo!==undefined?Number(b.dataset.goTo):index+Number(b.dataset.slideStep));});on(carousel,'mouseenter',()=>clearTimeout(timer));on(carousel,'mouseleave',schedule);on(document,'visibilitychange',schedule);on(carousel,'touchstart',e=>{touch=e.changedTouches[0].clientX;clearTimeout(timer);});on(carousel,'touchend',e=>{const dx=e.changedTouches[0].clientX-touch;if(Math.abs(dx)>50)show(index+(dx<0?1:-1));else schedule();});carouselCleanup=()=>{clearTimeout(timer);listeners.forEach(fn=>fn());};show(0);}
+setupCarousel();document.addEventListener('gdd:slides-updated',setupCarousel);

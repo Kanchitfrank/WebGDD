@@ -253,5 +253,159 @@
       "url": "https://www.roblox.com/games/9153488563/Roblox-PSP-Metaverse",
       "published": true
     }
+  ],
+  "slides": [
+    {
+      "id": "slide-0",
+      "title": "รูปสไลด์ 1",
+      "image": "assets/classroom-4.webp",
+      "published": true
+    },
+    {
+      "id": "slide-1",
+      "title": "รูปสไลด์ 2",
+      "image": "assets/classroom-0.webp",
+      "published": true
+    },
+    {
+      "id": "slide-2",
+      "title": "รูปสไลด์ 3",
+      "image": "assets/classroom-2.webp",
+      "published": true
+    },
+    {
+      "id": "slide-3",
+      "title": "รูปสไลด์ 4",
+      "image": "assets/classroom-5.webp",
+      "published": true
+    },
+    {
+      "id": "slide-4",
+      "title": "รูปสไลด์ 5",
+      "image": "assets/classroom-3.webp",
+      "published": true
+    }
+  ],
+  "branches": [
+    {
+      "id": "branch-0",
+      "title": "GDD พญาไท",
+      "address": "ตึกซีพีทาวเวอร์ 3 ชั้น M อาคาร A · ติดสถานีรถไฟฟ้าพญาไท",
+      "image": "assets/branch-0.webp",
+      "url": "https://maps.app.goo.gl/G67KFh1GUyEQXrqQ9",
+      "coordinates": [
+        13.7576494,
+        100.5338292
+      ],
+      "published": true
+    },
+    {
+      "id": "branch-1",
+      "title": "GDD แฟชั่นไอส์แลนด์",
+      "address": "ชั้น B โซนการศึกษา (ED35)",
+      "image": "assets/branch-1.webp",
+      "url": "https://maps.app.goo.gl/7fqhJx8rXYRALhmF6",
+      "coordinates": [
+        13.8256028,
+        100.6777987
+      ],
+      "published": true
+    },
+    {
+      "id": "branch-2",
+      "title": "GDD ทองหล่อ",
+      "address": "ชั้น 3 อาคาร Fifty Fifth Thonglor",
+      "image": "assets/branch-4.webp",
+      "url": "https://maps.app.goo.gl/inNqqXjmjxEDMZWu5",
+      "coordinates": [
+        13.7261456,
+        100.5804482
+      ],
+      "published": true
+    },
+    {
+      "id": "branch-3",
+      "title": "GDD The Walk ราชพฤกษ์",
+      "address": "ชั้น 2 โซน Genius World",
+      "image": "assets/branch-5.webp",
+      "url": "https://maps.app.goo.gl/NsHCPHFnEa9J86LHA?g_st=ic",
+      "coordinates": [
+        13.8210678,
+        100.4481445
+      ],
+      "published": true
+    },
+    {
+      "id": "branch-4",
+      "title": "GDD พงษ์เพชร",
+      "address": "ชั้น 3 อาคาร Diamond Life",
+      "image": "assets/branch-6.webp",
+      "url": "https://maps.app.goo.gl/K46zvgWDXwhob22f7",
+      "coordinates": [
+        13.8558292,
+        100.5457117
+      ],
+      "published": true
+    },
+    {
+      "id": "branch-5",
+      "title": "DigiWorld Phuket",
+      "address": "Bukis Phuket · Zone C หลัง Decathlon",
+      "image": "assets/branch-2.webp",
+      "url": "https://maps.app.goo.gl/FQmwN2UCCimrUFsi7",
+      "coordinates": [
+        7.8934143,
+        98.3683288
+      ],
+      "published": true
+    },
+    {
+      "id": "branch-6",
+      "title": "KidsCode Chanthaburi",
+      "address": "KidsCode จันทบุรี",
+      "image": "assets/branch-3.webp",
+      "url": "https://maps.app.goo.gl/BEn2tbBsCkVcgErn6?g_st=ic",
+      "coordinates": [
+        12.6108954,
+        102.109764
+      ],
+      "published": true
+    }
+  ],
+  "courseCategories": [
+    "เกมและโลก 3 มิติ",
+    "เริ่มต้นเขียนโค้ด",
+    "AI และเทคโนโลยี",
+    "เตรียมสอบและพอร์ต",
+    "สิ่งประดิษฐ์และหุ่นยนต์"
+  ],
+  "awards": [
+    {
+      "id": "award-0",
+      "title": "TOI 21",
+      "image": "assets/award-0.webp",
+      "summary": "นักเรียน GDD ผ่านการคัดเลือกเป็นผู้แทนแข่งขันคอมพิวเตอร์โอลิมปิก",
+      "url": "news/toi21/index.html",
+      "category": "เส้นทางคอมพิวเตอร์โอลิมปิก",
+      "published": true
+    },
+    {
+      "id": "award-1",
+      "title": "Scratch 2022",
+      "image": "assets/award-1.webp",
+      "summary": "น้องจิณณ์ ชนะเลิศการแข่งขันเขียนโปรแกรม Scratch ระดับชาติ",
+      "url": "awards/scratch-2022/index.html",
+      "category": "ความคิดสร้างสรรค์ผ่านโค้ด",
+      "published": true
+    },
+    {
+      "id": "award-2",
+      "title": "TOI 20",
+      "image": "assets/award-2.webp",
+      "summary": "น้องปีใหม่ ได้รับรางวัลเหรียญเงินในการแข่งขันคอมพิวเตอร์โอลิมปิกระดับชาติ ครั้งที่ 20",
+      "url": "awards/toi20/index.html",
+      "category": "การแก้ปัญหาและอัลกอริทึม",
+      "published": true
+    }
   ]
 }

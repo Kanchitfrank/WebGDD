@@ -3,7 +3,7 @@ let activeBranchMap=null,branchCleanup=null,lastUserLocation=null,lastRouteReque
 function initializeBranchMap(){
  if(!mapElement||!window.L)return;
  branchCleanup?.();activeBranchMap?.remove();document.querySelector('#branch-route')?.remove();
- const points=JSON.parse(document.querySelector('#branch-points').textContent);
+ const points=JSON.parse(document.querySelector('#branch-points').textContent);if(!points.length){mapElement.textContent='ยังไม่มีสาขาที่เปิดให้บริการ';return;}
  const bounds=L.latLngBounds([[5.6,97.3],[20.6,105.7]]);
  const map=L.map(mapElement,{scrollWheelZoom:true,maxBounds:bounds.pad(.08),maxBoundsViscosity:1,zoomSnap:.25});activeBranchMap=map;
  map.attributionControl.addAttribution('Routes: <a href="https://project-osrm.org">OSRM</a> / <a href="https://routing.openstreetmap.de/about.html">FOSSGIS</a> · <a href="https://www.openstreetmap.org/fixthemap">แก้ไขแผนที่</a>');
@@ -77,8 +77,9 @@ function initializeBranchMap(){
   locateButton.disabled=true;locationStatus.textContent='กำลังหาตำแหน่ง กรุณาอนุญาตในเบราว์เซอร์';
   navigator.geolocation.getCurrentPosition(position=>{lastUserLocation=[position.coords.latitude,position.coords.longitude];manualOrigin=null;placeSearch?.clear();start.value='';showOrigin();const index=nearest(lastUserLocation);locationStatus.textContent='สาขาที่ใกล้คุณ: '+points[index].name;choose(index);locateButton.disabled=false;},error=>{locationStatus.textContent=error.code===1?'ไม่ได้อนุญาตตำแหน่ง พิมพ์จุดเริ่มต้นในช่องค้นหาได้':'ยังหาตำแหน่งไม่ได้ ลองอีกครั้งหรือพิมพ์จุดเริ่มต้น';locateButton.disabled=false;},{enableHighAccuracy:false,timeout:12000,maximumAge:60000});
  };
+ let pickLocation=false;const pickMessage=e=>{if(e.origin===location.origin&&e.source===parent&&e.data?.type==='gdd-pick-location'){pickLocation=true;mapElement.scrollIntoView({block:'center'});mapElement.style.cursor='crosshair';}};window.addEventListener('message',pickMessage);map.on('click',e=>{if(pickLocation){pickLocation=false;mapElement.style.cursor='';parent.postMessage({type:'gdd-location-picked',coordinates:[e.latlng.lat,e.latlng.lng]},location.origin);}});
  googleURL();overview();showOrigin();
  const resize=()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>map.invalidateSize(),150);};window.addEventListener('resize',resize);
- branchCleanup=()=>{placeSearch?.dispose();clearRoute();clearTimeout(popupTimer);clearTimeout(resizeTimer);window.removeEventListener('resize',resize);};
+ branchCleanup=()=>{window.removeEventListener("message",pickMessage);placeSearch?.dispose();clearRoute();clearTimeout(popupTimer);clearTimeout(resizeTimer);window.removeEventListener('resize',resize);};
 }
 initializeBranchMap();document.addEventListener('gdd:branches-updated',initializeBranchMap);
