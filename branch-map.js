@@ -16,7 +16,7 @@ function initializeBranchMap(){
  const modes=el('label','เดินทางด้วย'),mode=el('select');
  for(const [value,text] of [['driving','รถยนต์'],['walking','เดิน'],['transit','ขนส่งสาธารณะ (Google Maps)']]){const option=el('option',text);option.value=value;mode.append(option);}modes.append(mode);
  const destinationLabel=el('label','เลือกสาขาที่ต้องการไป'),destination=el('select');const placeholder=el('option','เลือกสาขา');placeholder.value='';destination.append(placeholder);for(const [index,point] of points.entries()){const option=el('option',point.name);option.value=String(index);destination.append(option);}destinationLabel.append(destination);
- const manual=el('div',null,'route-origin-fields');manual.append(label,destinationLabel,modes);
+ const originGroup=el('div',null,'route-origin-group');originGroup.append(label);const manual=el('div',null,'route-origin-fields');manual.append(originGroup,destinationLabel,modes);
  const actions=el('div',null,'route-actions'),calculateButton=el('button','คำนวณเส้นทาง','button primary'),google=el('a','นำทางต่อใน Google Maps ↗','button outline');calculateButton.type='button';google.target='_blank';google.rel='noopener';google.hidden=true;actions.append(calculateButton,google);
  box.append(title,manual,result,actions);document.querySelector('.locations-layout').before(box);
  let manualOrigin=null,selected=null,userMarker=null,line=null,controller=null,request=0,routeTimer,popupTimer,resizeTimer,hasRoute=false;
