@@ -24,6 +24,9 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import shutil
+          import hashlib
+          import re
+          from urllib.parse import urlsplit, urlunsplit
           output = Path('_public')
           output.mkdir()
           for item in Path('.').iterdir():
@@ -33,6 +36,20 @@ jobs:
                   shutil.copytree(item, output / item.name)
               elif item.suffix in ('.html', '.css', '.js', '.ico'):
                   shutil.copy2(item, output / item.name)
+          for page in output.rglob('*.html'):
+              def version_asset(match):
+                  parts = urlsplit(match.group(3))
+                  if parts.scheme or parts.netloc or not parts.path:
+                      return match.group(0)
+                  asset = (page.parent / parts.path).resolve()
+                  if not asset.is_relative_to(output.resolve()) or asset.suffix not in ('.css', '.js') or not asset.is_file():
+                      return match.group(0)
+                  version = hashlib.sha256(asset.read_bytes()).hexdigest()[:12]
+                  query = '&'.join(value for value in parts.query.split('&') if value and not value.startswith('v='))
+                  url = urlunsplit(('', '', parts.path, (query + '&' if query else '') + 'v=' + version, parts.fragment))
+                  return match.group(1) + match.group(2) + url + match.group(2)
+              pattern = r"""(\b(?:src|href)=)(["'])([^"']+)\2"""
+              page.write_text(re.sub(pattern, version_asset, page.read_text(encoding='utf-8')), encoding='utf-8')
           (output / '.nojekyll').touch()
           PY
       - uses: actions/upload-pages-artifact@v3
