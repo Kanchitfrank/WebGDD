@@ -1,0 +1,3 @@
+admin/backups/
+content/*.tmp
+_public/

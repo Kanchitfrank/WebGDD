@@ -1,0 +1,43 @@
+name: Publish GDD website
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Prepare public website without local admin
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          output = Path('_public')
+          output.mkdir()
+          for item in Path('.').iterdir():
+              if item.name.startswith('.') or item.name in ('admin', '_public'):
+                  continue
+              if item.is_dir():
+                  shutil.copytree(item, output / item.name)
+              elif item.suffix in ('.html', '.css', '.js', '.ico'):
+                  shutil.copy2(item, output / item.name)
+          (output / '.nojekyll').touch()
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _public
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v5
